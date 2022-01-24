@@ -41,6 +41,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/bencode.hpp"
 
+namespace {
+
 using lt::operator""_bit;
 using similar_test_t = lt::flags::bitfield_flag<std::uint32_t, struct similar_test_type_tag>;
 
@@ -52,13 +54,6 @@ namespace st
 	constexpr similar_test_t alt_a = 3_bit;
 	constexpr similar_test_t magnet = 4_bit;
 	constexpr similar_test_t collection = 5_bit;
-};
-
-// test files
-struct file_t
-{
-	char const* name;
-	std::int64_t size;
 };
 
 std::array<bool, 2> test(
@@ -82,12 +77,12 @@ std::array<bool, 2> test(
 
 	{
 		ofstream f("./test-torrent-1/A");
-		f.write(A.data(), A.size());
+		f.write(A.data(), int(A.size()));
 	}
 
 	{
 		ofstream f("./test-torrent-1/B");
-		f.write(B.data(), B.size());
+		f.write(B.data(), int(B.size()));
 	}
 
 	auto t1 = [&] {
@@ -109,23 +104,23 @@ std::array<bool, 2> test(
 	if (sflags & st::alt_a)
 	{
 		ofstream f("test-torrent-2/A");
-		f.write(A_alt.data(), A_alt.size());
+		f.write(A_alt.data(), int(A_alt.size()));
 	}
 	else
 	{
 		ofstream f("test-torrent-2/A");
-		f.write(A.data(), A.size());
+		f.write(A.data(), int(A.size()));
 	}
 
 	if (sflags & st::alt_b)
 	{
 		ofstream f("test-torrent-2/B");
-		f.write(B_alt.data(), B_alt.size());
+		f.write(B_alt.data(), int(B_alt.size()));
 	}
 	else
 	{
 		ofstream f("test-torrent-2/B");
-		f.write(B.data(), B.size());
+		f.write(B.data(), int(B.size()));
 	}
 
 	auto t2 = [&] {
@@ -217,7 +212,7 @@ std::array<bool, 2> test(
 				if (auto const* fc = lt::alert_cast<lt::file_completed_alert>(al))
 				{
 					if (fc->handle == h2)
-						completed_files[static_cast<int>(fc->index)] = true;
+						completed_files[std::size_t(static_cast<int>(fc->index))] = true;
 				}
 				return false;
 			}, false);
@@ -227,6 +222,8 @@ std::array<bool, 2> test(
 	}
 
 	return completed_files;
+}
+
 }
 
 using bools = std::array<bool, 2>;
