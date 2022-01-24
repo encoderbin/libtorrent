@@ -54,7 +54,7 @@ namespace st
 	constexpr similar_test_t alt_a = 3_bit;
 	constexpr similar_test_t magnet = 4_bit;
 	constexpr similar_test_t collection = 5_bit;
-};
+}
 
 std::array<bool, 2> test(
 	 similar_test_t const sflags
