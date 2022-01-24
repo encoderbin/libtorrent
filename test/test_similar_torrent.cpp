@@ -87,8 +87,8 @@ std::array<bool, 2> test(
 
 	auto t1 = [&] {
 		lt::file_storage fs;
-		fs.add_file(ec, "test-torrent-1/A", A.size());
-		fs.add_file(ec, "test-torrent-1/B", B.size());
+		fs.add_file(ec, "test-torrent-1/A", std::int64_t(A.size()));
+		fs.add_file(ec, "test-torrent-1/B", std::int64_t(B.size()));
 		lt::create_torrent t(fs, 0, cflags1);
 		lt::set_piece_hashes(t, ".");
 		if (sflags & st::collection)
@@ -125,8 +125,8 @@ std::array<bool, 2> test(
 
 	auto t2 = [&] {
 		lt::file_storage fs;
-		fs.add_file(ec, "test-torrent-2/A", A.size());
-		fs.add_file(ec, "test-torrent-2/B", B.size());
+		fs.add_file(ec, "test-torrent-2/A", std::int64_t(A.size()));
+		fs.add_file(ec, "test-torrent-2/B", std::int64_t(B.size()));
 		lt::create_torrent t(fs, 0, cflags2);
 		lt::set_piece_hashes(t, ".");
 		if (sflags & st::collection)
