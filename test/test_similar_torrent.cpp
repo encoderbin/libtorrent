@@ -156,6 +156,8 @@ std::array<bool, 2> test(
 	lt::session ses(pack);
 
 	lt::add_torrent_params atp;
+	atp.flags &= ~lt::torrent_flags::auto_managed;
+	atp.flags &= ~lt::torrent_flags::paused;
 
 	if (sflags & st::seed_mode)
 		atp.flags |= lt::torrent_flags::seed_mode;
