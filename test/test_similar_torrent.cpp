@@ -185,23 +185,14 @@ std::array<bool, 2> test(
 		h2.set_metadata(t2->info_section());
 	}
 
-	// wait until torrent 2 changes state out of checking resume data
-	print_alerts(ses, "2", false, false, [&](lt::alert const* a) {
-		auto const* sa = lt::alert_cast<lt::state_changed_alert>(a);
-		if (!sa) return false;
-		if (sa->state == lt::torrent_status::checking_resume_data) return false;
-		return sa->handle == h2;
-	});
-
-
 	std::array<bool, 2> completed_files({false, false});
 
 	// wait for torrent 2 to either start downloading or finish. While waiting,
 	// record which files it completes
-	bool done = false;
-	while (!done)
+	auto const start_time = lt::clock_type::now();
+	for (;;)
 	{
-		done = print_alerts(ses, "2", false, false
+		auto const done = print_alerts(ses, "2", false, false
 			, [&](lt::alert const* al)
 			{
 				if (auto const* sc = lt::alert_cast<lt::state_changed_alert>(al))
@@ -218,9 +209,14 @@ std::array<bool, 2> test(
 				}
 				return false;
 			}, false);
+		if (done) break;
 
-		auto const* a = ses.wait_for_alert(lt::seconds(5));
-		TEST_CHECK(a);
+		if (lt::clock_type::now() - start_time > lt::seconds(5))
+		{
+			TEST_ERROR("timeout");
+			break;
+		}
+		ses.wait_for_alert(lt::seconds(5));
 	}
 
 	return completed_files;
